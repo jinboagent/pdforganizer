@@ -42,8 +42,9 @@ be fully reverted with `--undo`.
 pip install -r requirements.txt
 ```
 
-Documentation: options and examples below; formal requirements, algorithms and
-data formats in [SPECIFICATION.md](SPECIFICATION.md).
+Documentation: **[USAGE.md](USAGE.md)** is the practical step-by-step guide;
+[README.md](README.md) (this file) is the option reference;
+[SPECIFICATION.md](SPECIFICATION.md) has the formal details.
 
 Tests: `python tests/test_organizer.py` (self-contained, generates its own fixtures).
 
@@ -59,9 +60,15 @@ python pdf_organizer.py --input "E:\my_pdfs" --dry-run
 # only group into folders, do not rename any file
 python pdf_organizer.py --input "E:\my_pdfs" --no-rename
 
-# revert the last run
-python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
+# revert the last run — the log is found automatically
+python pdf_organizer.py --undo
+
+# see every active category
+python pdf_organizer.py --list-categories
 ```
+
+Extra CLI flags: `--verbose` (per-category move counts + example renames),
+`--version`. The process exits with code 1 if any file failed to move.
 
 With a config file (recommended for the full set of options):
 
@@ -76,7 +83,7 @@ python pdf_organizer.py --config myconfig.json
 |---|---|---|---|
 | `input_folder` | `--input` | `.` | Folder containing the PDFs to organize. |
 | `output_folder` | `--output` | same as input | Where category subfolders are created. **By default input and output are the same folder**, i.e. files are reorganized in place. Set a different folder to keep the input untouched. |
-| `recursive` | `--recursive` | `false` | Also scan subfolders of the input folder. |
+| `recursive` | `--recursive` | `false` | Also scan subfolders of the input folder. The output folder and the extraction cache are **never** descended into, even when they live inside the input folder. |
 | `ignore` | `--ignore a b …` | `[]` | Glob patterns for folders/files to skip, e.g. `["private", "*_backup", "invoices"]`. Matches any path part or relative path. |
 | `rename_files` | `--no-rename` to disable | `true` | Rename meaningless filenames to the document's title. `false` = keep all current names, only group into folders. |
 | `dry_run` | `--dry-run` | `false` | Compute and print the full plan (also saved to `.pdf_organizer_cache/plan_preview.txt`) without moving anything. |
@@ -168,6 +175,8 @@ python pdf_organizer.py --input "E:\my_pdfs"
 ### 6. Undo a run
 
 ```bash
+python pdf_organizer.py --undo              # finds organize_log.json automatically
+# or explicitly:
 python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
 ```
 
@@ -218,6 +227,7 @@ pdf_organizer/
 ├── pdf_organizer.py        # CLI entry point
 ├── config.example.json     # documented default config
 ├── requirements.txt
+├── USAGE.md                # practical step-by-step usage guide
 ├── SPECIFICATION.md        # software specification (requirements, algorithms, formats)
 ├── tests/
 │   └── test_organizer.py   # self-contained test program

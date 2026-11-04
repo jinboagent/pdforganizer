@@ -84,6 +84,32 @@ def write_log(log, cfg):
     return None
 
 
+def resolve_undo(spec, cfg=None):
+    """Return the path to an undo log.
+
+    spec may be an explicit path, or 'auto'/None to search the output folder,
+    the input folder and the current working directory for the log file.
+    """
+    if spec and spec != "auto":
+        if os.path.exists(spec):
+            return spec
+        raise SystemExit(f"undo log not found: {spec}")
+    candidates = []
+    if cfg:
+        names = [cfg.get("log_file") or "organize_log.json"]
+        for d in (cfg.get("_output_abs"), cfg.get("_input_abs")):
+            if d:
+                candidates += [os.path.join(d, n) for n in names]
+    candidates.append(os.path.join(os.getcwd(), "organize_log.json"))
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    raise SystemExit(
+        "No organize_log.json found next to the input/output folder or in the\n"
+        "current directory. Pass the path explicitly:\n"
+        '  python pdf_organizer.py --undo "path/to/organize_log.json"')
+
+
 def undo(log_path):
     """Reverse a previous run using its organize_log.json."""
     log = json.load(open(log_path, "r", encoding="utf-8"))

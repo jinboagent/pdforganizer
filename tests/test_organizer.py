@@ -22,7 +22,7 @@ from organizer.config import load_config
 from organizer.extract import find_pdfs, extract_all
 from organizer.classify import build_rule_set, classify
 from organizer.rename import new_name_for, name_kind
-from organizer.executor import build_plan, target_paths, apply_plan, write_log, undo
+from organizer.executor import build_plan, target_paths, apply_plan, write_log, undo, resolve_undo
 from organizer.report import write_reports
 
 # ---------------------------------------------------------------- framework
@@ -290,6 +290,48 @@ def test_ignore_and_recursive():
         cfg["ignore"] = []
         pdfs = find_pdfs(cfg)
         check(len(pdfs) == 7, f"non-recursive flat scan, got {len(pdfs)}")
+
+
+@test
+def test_undo_auto_discovery():
+    with tempfile.TemporaryDirectory() as root:
+        inp = build_fixtures(root)
+        out = os.path.join(root, "sorted")
+        cfg = base_cfg(inp, out, work_folder=os.path.join(root, "cache"))
+        recs = extract_all(find_pdfs(cfg), cfg)
+        ops = target_paths(build_plan(recs, cfg, build_rule_set(cfg), None, None), cfg)
+        _applied, _errors, log = apply_plan(ops, cfg)
+        logp = write_log(log, cfg)
+        check(logp and os.path.exists(logp), "log written")
+        # auto-discovery finds the log via the output folder, no explicit path
+        found = resolve_undo("auto", cfg)
+        check(os.path.samefile(found, logp), f"auto-discovered {found}")
+        undone, skipped = undo(found)
+        check(undone == 7 and skipped == 0, f"undo via discovery restored 7, got {undone}")
+
+
+@test
+def test_recursive_prunes_output_and_cache():
+    with tempfile.TemporaryDirectory() as root:
+        inp = build_fixtures(root)
+        out = os.path.join(inp, "sorted_out")            # output INSIDE input
+        cache = os.path.join(inp, ".cache")
+        os.makedirs(out, exist_ok=True)
+        make_pdf(os.path.join(out, "decoy.pdf"), NOISE_PAPER)
+        cfg = base_cfg(inp, out, recursive=True, work_folder=cache)
+        recs = extract_all(find_pdfs(cfg), cfg)
+        check(all("sorted_out" not in p for p in recs), "decoy in output folder not scanned")
+        ops = target_paths(build_plan(recs, cfg, build_rule_set(cfg), None, None), cfg)
+        applied, errors, _ = apply_plan(ops, cfg)
+        check(not errors and applied, "run completed with output nested inside input")
+        # after the run, a rescan must not pick up the moved files or the cache
+        found = find_pdfs(cfg)
+        check(found == [], f"recursive rescan prunes output+cache, got {found}")
+        # without pruning (output outside input) the moved files are visible
+        cfg2 = base_cfg(inp, os.path.join(root, "elsewhere"), recursive=True,
+                        work_folder=os.path.join(root, "c2"))
+        found2 = find_pdfs(cfg2)
+        check(all("sorted_out" in p for p in found2), f"all 7+1 visible: {len(found2)}")
 
 
 @test

@@ -6,7 +6,9 @@ Usage:
   python pdf_organizer.py --input E:\\pdfs                          # same folder in/out
   python pdf_organizer.py --input E:\\pdfs --output E:\\sorted --no-rename
   python pdf_organizer.py --input E:\\pdfs --dry-run               # plan only
-  python pdf_organizer.py --undo E:\\pdfs\\organize_log.json       # revert a run
+  python pdf_organizer.py --undo                                   # auto-find the log
+  python pdf_organizer.py --undo E:\\pdfs\\organize_log.json       # explicit log
+  python pdf_organizer.py --list-categories                        # show categories
 """
 import argparse
 import collections
@@ -16,11 +18,28 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from organizer.config import load_config
+from organizer import __version__
+from organizer.config import load_config, DEFAULTS
 from organizer.extract import find_pdfs, extract_all
 from organizer.classify import build_rule_set
-from organizer.executor import build_plan, target_paths, apply_plan, write_log, undo
+from organizer.executor import build_plan, target_paths, apply_plan, write_log, undo, resolve_undo
 from organizer.report import write_reports
+
+
+def _minimal_cfg(config_path, classifier_only=True):
+    """Load config without requiring a valid input folder (for undo/list)."""
+    over = {"input_folder": "."}
+    try:
+        return load_config(config_path, over)
+    except SystemExit:
+        cfg = json.loads(json.dumps(DEFAULTS))
+        if config_path and os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                user = json.load(f)
+            for k in ("log_file", "classifier"):
+                if k in user:
+                    cfg[k] = user[k]
+        return cfg
 
 
 def main():
@@ -35,12 +54,44 @@ def main():
     ap.add_argument("--ignore", nargs="*", default=None,
                     help="glob patterns of folders/files to skip (e.g. 'private' '*_backup')")
     ap.add_argument("--workers", type=int, default=None, help="parallel extraction workers")
-    ap.add_argument("--undo", metavar="LOG", help="undo a previous run using its organize_log.json")
+    ap.add_argument("--verbose", action="store_true", help="print per-category results and example renames")
+    ap.add_argument("--list-categories", action="store_true",
+                    help="print all active categories and exit")
+    ap.add_argument("--version", action="version", version=f"pdf_organizer {__version__}")
+    ap.add_argument("--undo", nargs="?", const="auto", default=None, metavar="LOG",
+                    help="undo a previous run; without a path the log is auto-discovered")
     args = ap.parse_args()
 
+    if args.list_categories:
+        cfg = _minimal_cfg(args.config)
+        rs = build_rule_set(cfg)
+        custom = [c for c, *_ in rs if c in {c["name"] for c in cfg.get("classifier", {}).get("custom_categories", [])}]
+        print(f"{len(rs)} active categories (custom first, then built-ins):\n")
+        width = max(len(c) for c, *_ in rs) + 2
+        line = ""
+        for c, *_ in rs:
+            tag = "  (custom)" if c in custom else ""
+            line += f"{c + ',':<{width}}"
+            if len(line) > 96:
+                print(line.rstrip()); line = ""
+        if line:
+            print(line.rstrip())
+        return
+
     if args.undo:
-        undone, skipped = undo(args.undo)
-        print(f"Undone: {undone} files restored, {skipped} skipped")
+        cfg = None
+        try:
+            over = {}
+            if args.input_folder:
+                over["input_folder"] = args.input_folder
+            if args.output_folder:
+                over["output_folder"] = args.output_folder
+            cfg = load_config(args.config, over or None)
+        except SystemExit:
+            cfg = _minimal_cfg(args.config)
+        logp = resolve_undo(args.undo, cfg)
+        undone, skipped = undo(logp)
+        print(f"Undone: {undone} files restored, {skipped} skipped  (log: {logp})")
         return
 
     overrides = {}
@@ -100,15 +151,30 @@ def main():
     for e in errors[:10]:
         print("  !", e)
 
+    if args.verbose:
+        vc = collections.Counter(op["cat"] for op in applied if
+                                 os.path.normpath(op["src"]) != os.path.normpath(op["dst"]))
+        if vc:
+            print("\nMoved per category:")
+            for cat, n in vc.most_common():
+                print(f"  {cat:<32}{n:>6}")
+        examples = [op for op in applied
+                    if op["old_name"].lower() != os.path.basename(op["dst"]).lower()][:8]
+        if examples:
+            print("\nExample renames:")
+            for op in examples:
+                print(f"  {op['old_name'][:48]:<50} -> {os.path.basename(op['dst'])[:60]}")
+
     logp = write_log(log, cfg)
     if logp:
-        print(f"Undo log: {logp}  (revert with --undo \"{logp}\")")
+        print(f"\nUndo log: {logp}\nRevert with:  python pdf_organizer.py --undo \"{logp}\"")
 
     # 4. reports
     write_reports(ops, cfg)
     if cfg.get("reports", {}).get("enabled", True):
         print("Reports written: rename_report.txt, folder_manifest.txt, summary.txt")
     print("Done.")
+    sys.exit(1 if errors else 0)
 
 
 if __name__ == "__main__":

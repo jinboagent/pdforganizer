@@ -11,15 +11,33 @@ WORKER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_extract_work
 
 
 def find_pdfs(cfg):
-    """All PDFs under input_folder (optionally recursive), minus ignored entries."""
+    """All PDFs under input_folder (optionally recursive), minus ignored entries.
+
+    Recursive scans never descend into the output folder or the extraction
+    cache when they live inside the input folder — re-organizing an already
+    organized library must not re-shuffle its own results.
+    """
     root = cfg["_input_abs"]
     ignore = cfg.get("ignore", [])
+
+    def _pruned_dirnames(dirpath, dirnames):
+        drop = set()
+        for special in (cfg["_output_abs"], os.path.abspath(cfg.get("work_folder") or "")):
+            if not special:
+                continue
+            rel = os.path.relpath(special, root)
+            if rel not in (".", "") and not rel.startswith(".."):
+                drop.add(rel.split(os.sep)[0])
+        return [d for d in dirnames
+                if d not in drop
+                and not _ignored(os.path.join(rel_dir, d) if rel_dir != "." else d, ignore)]
+
     pdfs = []
     if cfg.get("recursive"):
+        rel_dir = "."
         for dirpath, dirnames, filenames in os.walk(root):
             rel_dir = os.path.relpath(dirpath, root)
-            # filter ignored directories in-place
-            dirnames[:] = [d for d in dirnames if not _ignored(os.path.join(rel_dir, d) if rel_dir != '.' else d, ignore)]
+            dirnames[:] = _pruned_dirnames(dirpath, dirnames)
             for fn in filenames:
                 if fn.lower().endswith(".pdf"):
                     rel = os.path.join(rel_dir, fn) if rel_dir != "." else fn

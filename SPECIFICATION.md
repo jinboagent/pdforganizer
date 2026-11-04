@@ -1,6 +1,6 @@
 # pdf_organizer — Software Specification
 
-Version 1.0 · October 2026
+Version 1.1.0 · November 2026
 
 ## 1. Introduction
 
@@ -64,6 +64,8 @@ the move log enables `--undo`.
 | FR-14 | Every executed move shall be recorded in `organize_log.json`; `--undo <log>` shall restore every file to its source path and remove folders emptied by the undo. |
 | FR-15 | After an applied run the tool shall write `rename_report.txt` (old → new name), `folder_manifest.txt` (final layout) and `summary.txt` (per-category counts). |
 | FR-16 | Moves shall work within one drive (rename) and across drives (copy + delete). |
+| FR-17 | `--undo` without an explicit path shall auto-discover `organize_log.json` by searching the output folder, the input folder and the current working directory (in that order), and shall fail with an actionable message when none exists. |
+| FR-18 | When scanning recursively, `find_pdfs` shall never descend into the output folder or the extraction cache, so re-running on an already-organized library cannot re-shuffle its own results. |
 
 ## 4. Module specification
 
@@ -116,8 +118,17 @@ Data only: `DEFAULT_RULES` (ordered `[category, strong-patterns, weak-patterns]`
 - `write_log` / `undo` — the full move journal and its exact reverse (FR-14).
 
 ### 4.7 `organizer/report.py` — implements FR-15.
-### 4.8 `pdf_organizer.py` — CLI: argument parsing, orchestration, plan preview,
-progress output. `--undo` bypasses the pipeline entirely.
+### 4.8 `pdf_organizer.py` — CLI
+Argument parsing, orchestration, plan preview, progress output.
+
+Flags: `--config`, `--input`, `--output`, `--dry-run`, `--no-rename`,
+`--recursive`, `--nested`, `--ignore …`, `--workers`, `--verbose`
+(per-category move counts and example renames), `--list-categories`
+(print active categories and exit), `--version`, `--undo [LOG]`
+(auto-discovers the log per FR-17 when no path is given).
+Exit codes: 0 on success (and for `--undo`/`--list-categories`), 1 when any
+file failed to move, non-zero argparse errors otherwise.
+`--undo` bypasses the pipeline entirely.
 
 ## 5. Configuration reference
 
@@ -180,6 +191,8 @@ and verifies:
 | `test_dry_run_moves_nothing` | FR-13 |
 | `test_nested_first_letter` | FR-11 |
 | `test_ignore_and_recursive` | FR-1/2 |
+| `test_undo_auto_discovery` | FR-14/17 (auto-discovery + full undo) |
+| `test_recursive_prunes_output_and_cache` | FR-18 (output/cache never rescanned) |
 | `test_custom_category_priority` | FR-7 (custom wins, disabled falls back) |
 
 ## 10. Known limitations & future work
