@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Tool runtime artifacts
+.pdf_organizer_cache/
+organize_log.json
+rename_report.txt
+folder_manifest.txt
+summary.txt
+
+# User configs (keep config.example.json)
+myconfig.json
+
+# OS / editor
+Thumbs.db
+.DS_Store

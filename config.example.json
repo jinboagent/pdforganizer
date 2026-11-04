@@ -1,0 +1,43 @@
+# Default configuration for pdf_organizer.
+# Copy this file, edit the values, then run:
+#   python pdf_organizer.py --config myconfig.json
+{
+  "input_folder": "E:\\pdfs",
+  "output_folder": "E:\\pdfs",
+
+  "recursive": false,
+  "ignore": ["private", "*_backup"],
+
+  "rename_files": true,
+  "dry_run": false,
+
+  "nested": false,
+  "subfolder_by": "none",
+
+  "uncategorized_folder": "uncategorized",
+  "work_folder": ".pdf_organizer_cache",
+
+  "workers": 8,
+  "extract_timeout_sec": 45,
+  "max_pages": 3,
+
+  "reports": {
+    "enabled": true,
+    "rename_report": "rename_report.txt",
+    "manifest": "folder_manifest.txt",
+    "summary": "summary.txt"
+  },
+
+  "classifier": {
+    "min_score": 2.0,
+    "min_margin": 0.5,
+    "custom_categories": [
+      {
+        "name": "example_custom_topic",
+        "keywords": ["specialwidget", "flurbification"],
+        "weak_keywords": ["widget"]
+      }
+    ],
+    "disable_categories": ["example_custom_topic"]
+  }
+}
