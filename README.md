@@ -1,5 +1,7 @@
 # pdf_organizer
 
+**Languages**: [English](README.md) · [中文](README.zh-CN.md) · [Español](README.es.md)
+
 Organize a folder of PDF files **by their content**: the tool extracts text from the
 first pages of every PDF, classifies each document into a topic category, optionally
 renames files whose names are meaningless (numbers, codes, garbled text) to their
@@ -228,6 +230,10 @@ pdf_organizer/
 ├── config.example.json     # documented default config
 ├── requirements.txt
 ├── USAGE.md                # practical step-by-step usage guide
+├── USAGE.zh-CN.md          # usage guide (Chinese)
+├── USAGE.es.md             # usage guide (Spanish)
+├── README.zh-CN.md         # this reference (Chinese)
+├── README.es.md            # this reference (Spanish)
 ├── SPECIFICATION.md        # software specification (requirements, algorithms, formats)
 ├── tests/
 │   └── test_organizer.py   # self-contained test program

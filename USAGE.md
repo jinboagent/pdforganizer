@@ -1,5 +1,7 @@
 # pdf_organizer — Usage Guide
 
+**Languages**: [English](USAGE.md) · [中文](USAGE.zh-CN.md) · [Español](USAGE.es.md)
+
 A practical, step-by-step companion to the [README](README.md) (reference) and
 [SPECIFICATION](SPECIFICATION.md) (formal details). This page is about *how you
 actually drive the tool* day to day.
