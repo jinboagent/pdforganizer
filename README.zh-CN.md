@@ -157,19 +157,15 @@ python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
 
 把每个文件恢复到原始路径，并删除这次运行创建的文件夹。
 
-## 内置类别
+## 类别体系
 
-文档/行政：`travel_bookings`（旅行预订）、`certificates_ids`（证件）、`insurance_pension`（保险/养老金）、`bank_tax`（银行/税务）、`bills_utilities`（水电账单）、`contracts_agreements`（合同/协议）、`misc_admin`（其他行政）。
+默认规则编码了一套通用的知识分类标准：它来自本项目对一座真实的 10,500 PDF 混合图书馆（科研论文、教材、手册、个人行政文档、账单、小说；英文/中文/丹麦文）的整理实践，并在其上长期实测。覆盖的主题领域包括音频与语音处理、DSP 与数学、编程与计算机、个人行政事务（账单、银行/税务、旅行预订、证件）以及一般阅读材料等。
 
-音频与语音：`noise_reduction`（降噪）、`echo_cancellation`（回声消除）、`adaptive_filtering`（自适应滤波）、`beamforming`（波束成形）、`spatial_audio`（空间音频）、`room_acoustics`（房间声学）、`loudspeakers`（扬声器）、`microphones_transducers`（麦克风/换能器）、`hearing_aids_audiology`（助听器/听力学）、`audio_coding`（音频编码）、`music_audio`（音乐音频）、`audio_measurement`（音频测量）、`audio_production_broadcast`（音频制作/广播）、`audio_converters_interfaces`（音频转换器/接口）、`audio_effects_reverb`（音频效果/混响）、`audio_equalization`（均衡）、`audio_general`（音频综合）、`speech_recognition`（语音识别）、`speech_synthesis`（语音合成）、`speech_analysis`（语音分析）。
+你不需要事先掌握完整清单：
 
-数学/DSP：`machine_learning`（机器学习）、`statistics_probability`（统计/概率）、`optimization`（优化）、`mathematics_reference`（数学参考）、`dsp_general`（DSP 综合）、`filter_design`（滤波器设计）、`estimation_tracking`（估计/跟踪）。
-
-计算：`programming_python`（Python 编程）、`programming_cpp`（C++ 编程）、`programming_java`（Java 编程）、`programming_other`（其他编程）、`software_engineering`（软件工程）、`operating_systems`（操作系统）、`networking`（网络）、`databases`（数据库）、`web_dev`（Web 开发）、`embedded`（嵌入式）、`rf_microwave`（射频/微波）、`circuits`（电路）、`video_image`（视频/图像）。
-
-其他：`career_interview`（求职/面试）、`danish_education`（丹麦教育）、`writing_media`（写作/媒体）、`fiction`（小说）、`self_help`（自助）、`finance_accounting`（金融/会计）、`product_manuals`（产品手册）、`misc_reading`（其他阅读材料）。
-
-可以通过 `classifier.custom_categories` / `classifier.disable_categories` 重命名或停用其中任何类别 —— 也可以直接编辑 `organizer/rules.py`。
+- 随时查看当前生效的全部类别：`--list-categories`。
+- 整个类别方案集中在一个文件 `organizer/rules.py`，想改造就从它入手。
+- 通过 `classifier.custom_categories` / `classifier.disable_categories` 添加自己的主题或停用内置类别（见上文示例）。
 
 ## 注意事项与局限
 

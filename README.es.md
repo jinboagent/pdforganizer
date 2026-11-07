@@ -192,31 +192,23 @@ python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
 
 Devuelve cada archivo a su ruta original y elimina las carpetas que creó la ejecución.
 
-## Categorías integradas
+## El esquema de categorías
 
-Documentos/administración: `travel_bookings`, `certificates_ids`, `insurance_pension`,
-`bank_tax`, `bills_utilities`, `contracts_agreements`, `misc_admin`.
+Las reglas por defecto codifican un estándar de clasificación de conocimiento de
+propósito general, derivado de — y probado a fondo con — la biblioteca mixta real
+de 10.500 PDFs mencionada arriba (artículos de investigación, manuales técnicos,
+documentos administrativos personales, facturas, ficción; inglés/chino/danés).
+Abarca áreas temáticas como el procesamiento de audio y voz, DSP y matemáticas,
+programación e informática, administración personal (facturas, banca/impuestos,
+reservas de viaje, certificados) y material de lectura general.
 
-Audio y voz: `noise_reduction`, `echo_cancellation`, `adaptive_filtering`,
-`beamforming`, `spatial_audio`, `room_acoustics`, `loudspeakers`,
-`microphones_transducers`, `hearing_aids_audiology`, `audio_coding`, `music_audio`,
-`audio_measurement`, `audio_production_broadcast`, `audio_converters_interfaces`,
-`audio_effects_reverb`, `audio_equalization`, `audio_general`,
-`speech_recognition`, `speech_synthesis`, `speech_analysis`.
+No necesitas la lista completa de antemano:
 
-Matemáticas/DSP: `machine_learning`, `statistics_probability`, `optimization`,
-`mathematics_reference`, `dsp_general`, `filter_design`, `estimation_tracking`.
-
-Informática: `programming_python`, `programming_cpp`, `programming_java`,
-`programming_other`, `software_engineering`, `operating_systems`, `networking`,
-`databases`, `web_dev`, `embedded`, `rf_microwave`, `circuits`, `video_image`.
-
-Otras: `career_interview`, `danish_education`, `writing_media`, `fiction`,
-`self_help`, `finance_accounting`, `product_manuals`, `misc_reading`.
-
-Renombra o desactiva cualquiera de estas con
-`classifier.custom_categories` / `classifier.disable_categories` — o edita
-`organizer/rules.py` directamente.
+- Consulta todas las categorías activas en cualquier momento con `--list-categories`.
+- El esquema completo vive en un único archivo, `organizer/rules.py`, por si
+  quieres modificarlo.
+- Añade tus propios temas o desactiva los integrados con
+  `classifier.custom_categories` / `classifier.disable_categories` (ver arriba).
 
 ## Notas y limitaciones
 

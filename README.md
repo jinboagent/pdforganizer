@@ -184,30 +184,21 @@ python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
 
 Restores every file to its original path and removes folders the run created.
 
-## Built-in categories
+## Category scheme
 
-Documents/admin: `travel_bookings`, `certificates_ids`, `insurance_pension`,
-`bank_tax`, `bills_utilities`, `contracts_agreements`, `misc_admin`.
+The default rules encode a general-purpose knowledge classification standard,
+derived from and battle-tested on the 10,500-PDF mixed library mentioned above
+(research papers, textbooks, manuals, personal admin documents, bills, fiction;
+English/Chinese/Danish). It covers topic areas such as audio & speech processing,
+DSP and mathematics, programming and computing, personal administration
+(bills, bank/tax, travel bookings, certificates) and general reading material.
 
-Audio & speech: `noise_reduction`, `echo_cancellation`, `adaptive_filtering`,
-`beamforming`, `spatial_audio`, `room_acoustics`, `loudspeakers`,
-`microphones_transducers`, `hearing_aids_audiology`, `audio_coding`, `music_audio`,
-`audio_measurement`, `audio_production_broadcast`, `audio_converters_interfaces`,
-`audio_effects_reverb`, `audio_equalization`, `audio_general`,
-`speech_recognition`, `speech_synthesis`, `speech_analysis`.
+You don't need the full list up front:
 
-Math/DSP: `machine_learning`, `statistics_probability`, `optimization`,
-`mathematics_reference`, `dsp_general`, `filter_design`, `estimation_tracking`.
-
-Computing: `programming_python`, `programming_cpp`, `programming_java`,
-`programming_other`, `software_engineering`, `operating_systems`, `networking`,
-`databases`, `web_dev`, `embedded`, `rf_microwave`, `circuits`, `video_image`.
-
-Other: `career_interview`, `danish_education`, `writing_media`, `fiction`,
-`self_help`, `finance_accounting`, `product_manuals`, `misc_reading`.
-
-Rename or remove any of these via `classifier.custom_categories` /
-`classifier.disable_categories` — or edit `organizer/rules.py` directly.
+- See every active category at any time with `--list-categories`.
+- The whole scheme lives in one file, `organizer/rules.py`, if you want to fork it.
+- Add your own topics or switch built-ins off via
+  `classifier.custom_categories` / `classifier.disable_categories` (see above).
 
 ## Notes & limitations
 
