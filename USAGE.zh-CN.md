@@ -114,7 +114,7 @@ python pdf_organizer.py --list-categories
 | 控制台 | 运行前的类别计划；运行后的移动/出错数量 |
 | `rename_report.txt` | 每个被重命名的文件：旧名 → 新名，按文件夹分组 |
 | `folder_manifest.txt` | 完整的最终布局 —— 每个 PDF 最后在哪 |
-| `summary.txt` | 各类别数量 |
+| `summary.txt` | 各类别数量，并附每个类别对应的美国国会图书馆分类（LCC）顶级大类和 arXiv 学科领域 —— 标准的人类知识分类代码 |
 | `organize_log.json` | 机器可读的移动日志（`--undo` 使用） |
 | `.pdf_organizer_cache/` | 提取缓存 + dry-run 生成的 `plan_preview.txt`。可安全删除。 |
 
@@ -147,3 +147,4 @@ python pdf_organizer.py --list-categories
 - [README.zh-CN.md](README.zh-CN.md) — 完整选项参考和内置类别列表
 - [SPECIFICATION.md](SPECIFICATION.md) — 分类器如何打分、数据格式、保证（英文）
 - `organizer/rules.py` — 类别模式本身，想改造类别方案就从这里入手
+- `organizer/schemes.py` — 每个类别对应的 LCC / arXiv 标准知识分类代码

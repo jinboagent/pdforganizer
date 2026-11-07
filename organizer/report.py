@@ -3,6 +3,8 @@ import collections
 import os
 from datetime import date
 
+from .schemes import standard_codes, lcc_label
+
 
 def write_reports(ops, cfg):
     rcfg = cfg.get("reports", {})
@@ -40,7 +42,8 @@ def write_reports(ops, cfg):
         for op in ops:
             by_cat[op["cat"]].append(op["dst"])
         for cat in sorted(by_cat):
-            fh.write(f"\n### {cat}/  ({len(by_cat[cat])} files)\n")
+            codes = _codes_suffix(cat)
+            fh.write(f"\n### {cat}/  ({len(by_cat[cat])} files){codes}\n")
             for d in sorted(by_cat[cat], key=str.lower):
                 fh.write(f"  {os.path.relpath(d, os.path.join(out, cat))}\n")
 
@@ -53,9 +56,20 @@ def write_reports(ops, cfg):
         fh.write("pages; see README). Files with meaningless names were renamed from their\n")
         fh.write("content. Files are grouped into category folders.\n\n")
         fh.write("See rename_report.txt and folder_manifest.txt for details.\n\n")
-        fh.write("CATEGORY                            FILES\n")
-        fh.write("-" * 44 + "\n")
+        fh.write("LCC = Library of Congress Classification top class (public domain);\n")
+        fh.write("arXiv = arXiv subject area. '-' = no class in any standard scheme\n")
+        fh.write("(personal/practical documents).\n\n")
+        fh.write(f'{"CATEGORY":<36}{"LCC":<21}{"arXiv":<10}FILES\n')
+        fh.write("-" * 76 + "\n")
         cnt = collections.Counter(op["cat"] for op in ops)
         for cat, n in cnt.most_common():
-            fh.write(f"{cat:<36}{n:>6}\n")
-        fh.write(f'{"TOTAL":<36}{sum(cnt.values()):>6}\n')
+            lcc = lcc_label(cat) or "-"
+            arxiv = standard_codes(cat)[1] or "-"
+            fh.write(f"{cat:<36}{lcc:<21}{arxiv:<10}{n:>6}\n")
+        fh.write(f'{"TOTAL":<36}{"":<21}{"":<10}{sum(cnt.values()):>6}\n')
+
+
+def _codes_suffix(cat):
+    """' [LCC T - Technology | arXiv eess.AS]' for the manifest headers."""
+    parts = [p for p in (lcc_label(cat), standard_codes(cat)[1]) if p]
+    return f"  [{ ' | '.join(parts) }]" if parts else ""

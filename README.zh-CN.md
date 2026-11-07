@@ -166,6 +166,7 @@ python pdf_organizer.py --undo "E:\my_pdfs\organize_log.json"
 - 随时查看当前生效的全部类别：`--list-categories`。
 - 整个类别方案集中在一个文件 `organizer/rules.py`，想改造就从它入手。
 - 通过 `classifier.custom_categories` / `classifier.disable_categories` 添加自己的主题或停用内置类别（见上文示例）。
+- 报告和 `--list-categories` 会为每个类别标注其**美国国会图书馆分类（LCC）**顶级大类和 **arXiv** 学科领域 —— 工具的类别体系与人类标准知识分类保持对应（`organizer/schemes.py`）。个人实务文件（账单、证件、预订）在任何图书馆/科学体系中都没有对应类，标注留空。
 
 ## 注意事项与局限
 
@@ -194,6 +195,7 @@ pdf_organizer/
     ├── _extract_worker.py  # 单 PDF 提取子进程
     ├── classify.py         # 打分分类器
     ├── rename.py           # 无意义文件名检测 + 标题提取
+    ├── schemes.py          # LCC / arXiv 标准知识分类代码
     ├── executor.py         # 计划/执行/撤销
     └── report.py           # 三个报告文件
 ```

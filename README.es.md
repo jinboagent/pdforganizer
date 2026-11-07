@@ -209,6 +209,12 @@ No necesitas la lista completa de antemano:
   quieres modificarlo.
 - Añade tus propios temas o desactiva los integrados con
   `classifier.custom_categories` / `classifier.disable_categories` (ver arriba).
+- Los informes y `--list-categories` anotan cada categoría con su clase superior
+  de la **Library of Congress Classification** y su área temática de **arXiv** —
+  el esquema de la herramienta se mantiene relacionable con las clasificaciones
+  estándar del conocimiento humano (`organizer/schemes.py`). Los documentos
+  personales/prácticos (facturas, certificados, reservas) no tienen clase en
+  ningún esquema bibliotecario o científico y quedan en blanco.
 
 ## Notas y limitaciones
 
@@ -244,6 +250,7 @@ pdf_organizer/
     ├── _extract_worker.py  # subproceso de extracción por PDF
     ├── classify.py         # clasificador por puntuación
     ├── rename.py           # detección de nombres sin sentido + extracción de título
+    ├── schemes.py          # códigos de clasificación estándar LCC / arXiv
     ├── executor.py         # plan/aplicar/deshacer
     └── report.py           # los tres archivos de informe
 ```

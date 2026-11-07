@@ -1,6 +1,6 @@
 # pdf_organizer — Software Specification
 
-Version 1.1.0 · November 2026
+Version 1.2.0 · November 2026
 
 ## 1. Introduction
 
@@ -66,6 +66,7 @@ the move log enables `--undo`.
 | FR-16 | Moves shall work within one drive (rename) and across drives (copy + delete). |
 | FR-17 | `--undo` without an explicit path shall auto-discover `organize_log.json` by searching the output folder, the input folder and the current working directory (in that order), and shall fail with an actionable message when none exists. |
 | FR-18 | When scanning recursively, `find_pdfs` shall never descend into the output folder or the extraction cache, so re-running on an already-organized library cannot re-shuffle its own results. |
+| FR-19 | Each built-in category shall be annotated with its Library of Congress Classification (LCC) top class and its arXiv subject area in the reports and in `--list-categories`. The codes are informational only and shall never affect classification or file moves. Personal/practical document categories have no standard class and are left blank. |
 
 ## 4. Module specification
 
@@ -117,8 +118,9 @@ Data only: `DEFAULT_RULES` (ordered `[category, strong-patterns, weak-patterns]`
   overwrite; `shutil.move` (FR-12/16). Dry-run records but does not touch disk (FR-13).
 - `write_log` / `undo` — the full move journal and its exact reverse (FR-14).
 
-### 4.7 `organizer/report.py` — implements FR-15.
-### 4.8 `pdf_organizer.py` — CLI
+### 4.7 `organizer/report.py` — implements FR-15. Manifest category headers and the summary table additionally carry the LCC/arXiv standard codes (FR-19).
+### 4.8 `organizer/schemes.py` — Data only: `LCC_MAP` (category → LCC top-class letter), `ARXIV_MAP` (category → arXiv area), `LCC_TOP` (letter → label) and the helpers `standard_codes` / `lcc_label`. Implements FR-19.
+### 4.9 `pdf_organizer.py` — CLI
 Argument parsing, orchestration, plan preview, progress output.
 
 Flags: `--config`, `--input`, `--output`, `--dry-run`, `--no-rename`,
@@ -194,6 +196,7 @@ and verifies:
 | `test_undo_auto_discovery` | FR-14/17 (auto-discovery + full undo) |
 | `test_recursive_prunes_output_and_cache` | FR-18 (output/cache never rescanned) |
 | `test_custom_category_priority` | FR-7 (custom wins, disabled falls back) |
+| `test_standard_schemes` | FR-19 (LCC covers every built-in, no stale keys, codes rendered in summary) |
 
 ## 10. Known limitations & future work
 

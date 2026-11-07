@@ -129,7 +129,7 @@ recursive scans skip the output folder and cache automatically.
 | console | Category plan before the run; moved/error counts after |
 | `rename_report.txt` | Every renamed file: old name → new name, grouped by folder |
 | `folder_manifest.txt` | The complete final layout — where every single PDF ended up |
-| `summary.txt` | Per-category counts |
+| `summary.txt` | Per-category counts, plus each category's Library of Congress (LCC) top class and arXiv subject area — standard human knowledge classification codes |
 | `organize_log.json` | Machine-readable move journal (used by `--undo`) |
 | `.pdf_organizer_cache/` | Extraction cache + `plan_preview.txt` from dry-runs. Safe to delete. |
 
@@ -173,3 +173,4 @@ recursive scans skip the output folder and cache automatically.
 - [README.md](README.md) — full option reference and the built-in category list
 - [SPECIFICATION.md](SPECIFICATION.md) — how the classifier scores, data formats, guarantees
 - `organizer/rules.py` — the category patterns themselves, if you want to fork the scheme
+- `organizer/schemes.py` — the LCC / arXiv standard-classification codes per category

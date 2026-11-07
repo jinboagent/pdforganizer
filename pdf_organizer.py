@@ -63,19 +63,19 @@ def main():
     args = ap.parse_args()
 
     if args.list_categories:
+        from organizer.schemes import standard_codes, lcc_label
         cfg = _minimal_cfg(args.config)
         rs = build_rule_set(cfg)
-        custom = [c for c, *_ in rs if c in {c["name"] for c in cfg.get("classifier", {}).get("custom_categories", [])}]
-        print(f"{len(rs)} active categories (custom first, then built-ins):\n")
+        custom = {c["name"] for c in cfg.get("classifier", {}).get("custom_categories", [])}
+        print(f"{len(rs)} active categories (custom first, then built-ins).")
+        print("LCC = Library of Congress top class; arXiv = arXiv subject area.\n")
         width = max(len(c) for c, *_ in rs) + 2
-        line = ""
+        print(f"{'CATEGORY':<{width}}{'LCC':<21}arXiv")
+        print("-" * (width + 31))
         for c, *_ in rs:
             tag = "  (custom)" if c in custom else ""
-            line += f"{c + ',':<{width}}"
-            if len(line) > 96:
-                print(line.rstrip()); line = ""
-        if line:
-            print(line.rstrip())
+            lcc = lcc_label(c) or "-"
+            print(f"{c + tag:<{width}}{lcc:<21}{standard_codes(c)[1] or '-'}")
         return
 
     if args.undo:

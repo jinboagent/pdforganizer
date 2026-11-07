@@ -134,7 +134,7 @@ automáticamente la carpeta de salida y la caché.
 | consola | El plan de categorías antes de la ejecución; recuentos de movimientos/errores después |
 | `rename_report.txt` | Cada archivo renombrado: nombre antiguo → nuevo, agrupado por carpeta |
 | `folder_manifest.txt` | El diseño final completo — dónde acabó cada PDF |
-| `summary.txt` | Recuentos por categoría |
+| `summary.txt` | Recuentos por categoría, más la clase superior de la Library of Congress (LCC) y el área temática de arXiv de cada categoría — códigos estándar de clasificación del conocimiento humano |
 | `organize_log.json` | Registro de movimientos legible por máquina (lo usa `--undo`) |
 | `.pdf_organizer_cache/` | Caché de extracción + `plan_preview.txt` de los dry-runs. Seguro de borrar. |
 
@@ -180,3 +180,4 @@ automáticamente la carpeta de salida y la caché.
 - [README.es.md](README.es.md) — referencia completa de opciones y lista de categorías integradas
 - [SPECIFICATION.md](SPECIFICATION.md) — cómo puntúa el clasificador, formatos de datos, garantías (inglés)
 - `organizer/rules.py` — los patrones de las categorías, si quieres retocar el esquema
+- `organizer/schemes.py` — los códigos de clasificación estándar LCC / arXiv por categoría

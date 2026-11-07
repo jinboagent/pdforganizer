@@ -199,6 +199,11 @@ You don't need the full list up front:
 - The whole scheme lives in one file, `organizer/rules.py`, if you want to fork it.
 - Add your own topics or switch built-ins off via
   `classifier.custom_categories` / `classifier.disable_categories` (see above).
+- Reports and `--list-categories` annotate every category with its **Library of
+  Congress Classification** top class and **arXiv** subject area — the tool's
+  scheme stays relatable to standard human knowledge classifications
+  (`organizer/schemes.py`). Personal/practical documents (bills, certificates,
+  bookings) have no class in any library or scientific scheme and are left blank.
 
 ## Notes & limitations
 
@@ -235,6 +240,7 @@ pdf_organizer/
     ├── _extract_worker.py  # per-PDF extraction subprocess
     ├── classify.py         # scoring classifier
     ├── rename.py           # meaningless-name detection + title extraction
+    ├── schemes.py          # LCC / arXiv standard-classification codes
     ├── executor.py         # plan/apply/undo
     └── report.py           # the three report files
 ```

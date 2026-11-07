@@ -352,6 +352,36 @@ def test_custom_category_priority():
         check(cat2 == "echo_cancellation", f"disabled category falls back, got {cat2}")
 
 
+@test
+def test_standard_schemes():
+    from organizer.rules import DEFAULT_RULES
+    from organizer.schemes import LCC_MAP, ARXIV_MAP, standard_codes, lcc_label, LCC_TOP
+    cats = [c for c, *_ in DEFAULT_RULES]
+    missing = [c for c in cats if c not in LCC_MAP]
+    check(not missing, f"every built-in category has an LCC entry, missing: {missing}")
+    stale = [c for c in ARXIV_MAP if c not in cats]
+    check(not stale, f"ARXIV_MAP has no stale keys, stale: {stale}")
+    check(all(c in cats for c in LCC_MAP), "LCC_MAP has no stale keys")
+    check(all(letter in LCC_TOP for letter in LCC_MAP.values() if letter),
+          "every used LCC letter has a label")
+    check(standard_codes("echo_cancellation") == ("T", "eess.AS"), "echo -> T/eess.AS")
+    check(lcc_label("echo_cancellation") == "T - Technology", "LCC label rendered")
+    check(standard_codes("bills_utilities") == ("", ""),
+          "personal/practical documents have no standard class")
+    check(standard_codes("unknown_category") == ("", ""), "unknown categories map to ('', '')")
+    # the summary report carries the code columns
+    with tempfile.TemporaryDirectory() as root:
+        inp = build_fixtures(root)
+        out = os.path.join(root, "sorted")
+        cfg = base_cfg(inp, out, work_folder=os.path.join(root, "cache"))
+        recs = extract_all(find_pdfs(cfg), cfg)
+        ops = target_paths(build_plan(recs, cfg, build_rule_set(cfg), None, None), cfg)
+        write_reports(ops, cfg)
+        summary = open(os.path.join(out, "summary.txt"), encoding="utf-8").read()
+        check("LCC" in summary and "arXiv" in summary, "summary has standard-code columns")
+        check("eess." in summary, "summary shows an arXiv code")
+
+
 def main():
     only = sys.argv[1:] or None
     for fn in TESTS:
